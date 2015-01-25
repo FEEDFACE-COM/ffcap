@@ -1,0 +1,83 @@
+defmodule Core.Parser do
+    import Core.Util
+    
+    
+    defmodule Context do
+        defstruct(
+            registry: nil,
+            count: 0,
+            time: 0,
+        )
+    end
+    
+    
+    
+    def start_link(regnode) do
+        me = {self,node}
+        log "send to #{inspect({:registry,regnode})}"  
+        context = %Context{
+            registry: {:registry, regnode}
+        }     
+#        send registry, {:ready, me}
+        Core.Registry.ready(context.registry, me)
+        GenServer.start_link(__MODULE__,context,[])
+    end
+
+
+
+    def parse(parser,data) do
+        log "parsing..."
+        :timer.sleep 100
+        :ok
+    end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    def init(context) do
+        log "parser initialize #{inspect self}"
+        Process.send_after self, [stat: %Context{time: timeofday}], 1000
+        {:ok, %Context{context | time: timeofday}}
+    end
+
+    def handle_info([stat: t0],context) do
+        log "parser stats " <> print_stats context, t0
+        Process.send_after self, [stat: %Context{context | time: timeofday}], 1000
+        {:noreply, context}
+    end
+
+    def handle_info(msg, context) do
+        log "parser info #{inspect msg}"
+        {:noreply,context}
+    end
+    
+    def handle_call(call, _from, context) do
+        log "parser call #{inspect call}"
+        {:reply, :ok, context}
+    end
+    
+    def terminate(reason, contest) do
+        log "registry terminate"
+    end
+
+    defp print_stats(stat,last) do
+        delta = %Context{ 
+            time: timeofday - last.time,
+            count: stat.count - last.count, 
+        }
+        "#{Core.Util.time(timeofday - stat.time)}  "
+            <> if stat.count > 0 do "#{Core.Util.count stat.count}msgs  " else "" end
+            <> if delta.count > 0 do "#{Core.Util.rate delta.count, delta.time}mps  " else "" end 
+    end
+
+end
