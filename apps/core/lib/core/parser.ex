@@ -22,13 +22,14 @@ defmodule Core.Parser do
         GenServer.start_link(__MODULE__,context,[name: :parser])
     end
 
-#        send {:registry, regnode}, {:ready, me}
-#        Node.spawn_link regnode, fn -> Core.Registry.ready(:registry,me) end
 
-
+#    def parse(parser,data) do
+#        pid = Node.spawn_link(parser, fn -> Core.Parser.parse(data) end)
+#        GenServer.cast({:parser, parser}, [monitor: pid])
+#    end
+    
     def parse(parser,data) do
-        pid = Node.spawn_link(parser, fn -> Core.Parser.parse(data) end)
-        GenServer.cast({:parser, parser}, [monitor: pid])
+        GenServer.cast({:parser, parser}, parse: data)
     end
     
     
@@ -53,22 +54,7 @@ defmodule Core.Parser do
             
 #        log msg
         :timer.sleep 100
-        
         result(:parser, size)
-        
-            
-#        {err,ret} = 
-#            case protocol do
-#                ExCap.Proto.Null ->
-#                    ExCap.Proto.Null.parse data
-#                ExCap.Proto.Ethernet -> 
-#                    ExCap.Proto.Ethernet.parse data
-#                _ when is_nil(protocol) ->
-#                    {:error, ["unspecified protocol"]}
-#                foo -> 
-#                    {:error, ["unknown protocol #{protocol}"]}
-#            end
-#        {err, [msg | ret]}
     end
 
 
@@ -109,6 +95,11 @@ defmodule Core.Parser do
 #        log "parser timeout"
         Core.Registry.ready(context.registry,node)
         {:noreply, context, @timeout}
+    end
+
+    def handle_cast([parse: data],context) do
+        spawn_monitor fn -> parse(data) end
+        {:noreply, %Context{context| worker: context.worker+1}, @timeout}
     end
 
     def handle_cast([result: size],context) do
