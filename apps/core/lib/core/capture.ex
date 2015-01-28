@@ -34,7 +34,7 @@ defmodule Core.Capture do
         parser = Core.Registry.get_parser(context.registry)
         
         if parser != nil do
-            Core.Parser.parse(parser, context.proto ++ capture)
+            Core.Parser.parse(parser, context.proto ++ [time: time, size: size, data: <<0x0>>] )
         end
         context
     end

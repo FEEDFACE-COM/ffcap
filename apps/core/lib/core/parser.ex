@@ -148,7 +148,7 @@ defmodule Core.Parser do
             <> if delta.count > 0 do "#{Core.Util.rate delta.count, delta.time}mps  " else "" end 
             <> if stat.byte > 0 do "#{Core.Util.byte stat.byte}  " else "" end
             <> if delta.byte > 0 do "#{Core.Util.bps delta.byte, delta.time}  " else "" end 
-            <> if stat.worker > 0 do "#{stat.worker} worker  " else "" end
+            <> if stat.worker != 0 do "#{stat.worker} worker  " else "" end
     end
 
 end

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAME=c$$@$(hostname -s)
+NAME=c${PPID}@$(hostname -s)
 
 
 if [ $# == 1 ]; then
@@ -21,7 +21,6 @@ iex \
      -S mix \
      run \
      --no-start \
-     --config ./config/capture.exs \
      --eval "Core.Capture.start_link :'${REGISTRY}', '$ARGS'"
      
 
