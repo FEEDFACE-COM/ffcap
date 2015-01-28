@@ -58,7 +58,7 @@ defmodule Core.Capture do
         if count == 0 or context.count != t0.count do
             log "capture stats " <> print_stats context, t0
         end
-        Process.send_after self, [stat: %Context{context | time: timeofday}, count: rem(count+1,5)], 1000
+        Process.send_after self, [stat: %Context{context | time: timeofday}, count: rem(count+1,1)], 1000
         {:noreply, context}
     end
 
