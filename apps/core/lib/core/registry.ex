@@ -89,7 +89,7 @@ defmodule Core.Registry do
     end
     
     def handle_info([stat: t0, count: count],context) do
-        if count == 0 or context.count != t0.count or context.parsers != t0.parsers do
+        if count == 0 or context.parsers != t0.parsers do #or context.count != t0.count do
             log "registry stats " <> print_stats context, t0
         end
         Process.send_after self, [stat: %Context{context | time: timeofday}, count: rem(count+1,5)], 1000

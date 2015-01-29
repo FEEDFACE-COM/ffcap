@@ -10,7 +10,8 @@ defmodule Core.Supervisor do
     def init(:ok) do
     
         children = [
-            worker(Core.Registry, [[name: @registry_name]])
+#            worker(Core.Registry, [[name: @registry_name]]),
+            worker(Core.Parser, [])
         ]
         
         supervise(children, strategy: :one_for_one)
