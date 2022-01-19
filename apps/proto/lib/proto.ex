@@ -1,0 +1,2 @@
+defmodule Proto do
+end
